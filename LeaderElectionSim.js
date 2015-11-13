@@ -368,13 +368,22 @@ var drawNode = function(node){
 		paperNode.strokeColor = nodeUncertainColor;
 	}
 	else {
-		paperNode.strokeColor = nodeStrokeColor;
+		paperNode.strokeColor = nodeUncertainColor;
 	}
 
 	if (node.infected){
 		paperNode.fillColor = nodeInfectedColor;
 	} else {
 		paperNode.fillColor = nodeOKColor;
+	}
+
+	if (node.hasLeader && !node.leader){
+		var size = nodeRadius + nodeStrokeWidth/2 + connectionStrokeWidth;
+		var backNode = new paper.Path.Circle(node.position, size);
+		backNode.strokeColor = connectionStrokeColor;
+		backNode.fillColor = connectionStrokeColor;
+		node.paperObjects.push(backNode);
+		connectionLayer.addChild(backNode);
 	}
 
 	paperNode.strokeWidth = nodeStrokeWidth;
