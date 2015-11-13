@@ -1,19 +1,27 @@
 paper.setup("c");
 
 var counter = 0;
-var nodeRadius = 20;
-var nodeSignalRadius = 200;
-var backgroundColor = "#dddddd";
-var nodeColor = "#ffffff";
-var nodeStrokeColor = "#000000";
+var nodeRadius = 10;
+var nodeSignalRadius = 100;
+var purple = "#4A148C";
+var green = "#4CAF50";
+var red = "#F44336";
+var blue = "#3F51B5";
+var black = "#000000";
+var gray = "#EEEEEE";
+var darkGray = "#616161";
+var white = "#FFFFFF";
+var backgroundColor = gray;
+var nodeStrokeColor = darkGray;
 var nodeStrokeWidth = 3;
 var nodeLeaderStrokeWidth = 5;
-var nodeLeaderColor = "#AAAAFF";
-var nodeOKColor = "#AAFFAA";
-var nodeInfectedColor = "#FFAAAA";
+var nodeLeaderColor = blue;
+var nodeUncertainColor = gray;
+var nodeOKColor = green;
+var nodeInfectedColor = red;
 var connectionStrokeWidth = 2;
-var connectionStrokeColor = "#000000";
-var validRadius = nodeRadius * 4;
+var connectionStrokeColor = darkGray;
+var validDistance = 30;
 
 
 var background = new paper.Path.Rectangle({
@@ -44,15 +52,9 @@ var node = function(x, y, id){
 	this.infected = false;
 	this.id = id;
 	this.paperObjects = [];
+	this.hasLeader = false;
+	this.leaderID = -1;
 	this.neighbors = [];
-
-	this.isValid = function(neighbor, validDistance){
-		var dist = this.position.getDistance(neighbor.position); 
-		if (dist < validDistance){
-			return true;
-		}
-		else return false;
-	}
 
 	this.isNeighbor = function(neighbor){
 		var dist = this.position.getDistance(neighbor.position); 
@@ -64,17 +66,6 @@ var node = function(x, y, id){
 
 	this.addNeighbor = function(neighbor){
 		this.neighbors.push(neighbor);
-	}
-
-	this.isValidNodeLocation = function(nodes){
-		this.neighbors = [];
-		for (var i in nodes){
-			var neighbor = nodes[i];
-			if (neighbor.id != this.id && !this.isValid(nodes[i]), validRadius){
-				return false
-			}
-		}
-		return true;
 	}
 
 	this.findNeighbors = function(nodes){
@@ -97,12 +88,15 @@ var drawNode = function(node){
 
 	node.paperObjects = [];
 
-	var paperNode = paper.Path.Circle(node.position, node.radius);
+	var paperNode = paper.Path.Circle(node.position, nodeRadius);
 	nodeLayer.addChild(paperNode);
 
 	if (node.leader){
 		paperNode.strokeColor = nodeLeaderColor;
-	} else {
+	} else if (!node.hasLeader){
+		paperNode.strokeColor = nodeUncertainColor;
+	}
+	else {
 		paperNode.strokeColor = nodeStrokeColor;
 	}
 
@@ -139,11 +133,21 @@ nodeTool.onMosueDrag = function(event) {
 }
 
 var createNode = function(x, y){
-	var newNode = new node(x,y, counter);
-	//if (newNode.isValidNodeLocation(nodes)){
+
+	var p = new paper.Point(x,y);
+	var valid = true;
+	for (var n in nodes){
+		var dist = p.getDistance(nodes[n].position);
+		if (dist < validDistance){
+			valid = false;
+		}
+	}
+
+	if (valid){
+		var newNode = new node(x,y, counter);
 		counter++;
 		nodes.push(newNode);
 		newNode.findNeighbors(nodes);
-		drawNode(newNode);
-	//}
+		drawNode(newNode);	
+	}
 }
