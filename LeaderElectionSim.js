@@ -451,11 +451,22 @@ var step = function(){
 	updateNodes();
 }
 
+var removeAllNodes = function(){
+	for (var i in nodes){
+		nodes[i].remove();
+	}
+	nodes = [];
+	counter = 0;
+}
+
 var clickTool = new paper.Tool();
 
 clickTool.onKeyDown = function(event){
 	if (event.key == 'shift'){
 		del = true;
+	}
+	if (event.key == 'enter'){
+		removeAllNodes();
 	}
 }
 
