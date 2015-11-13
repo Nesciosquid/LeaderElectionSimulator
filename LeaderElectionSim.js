@@ -30,6 +30,10 @@ var background = new paper.Path.Rectangle({
         fillColor: '#dddddd',
     });
 
+background.onMouseDown = function(event){
+	createNode(event.point.x, event.point.y);
+}
+
 background.onMouseDrag = function(event){
 	createNode(event.point.x, event.point.y);
 }
@@ -43,8 +47,6 @@ backgroundLayer.insertBelow(connectionLayer);
 
 
 var nodes = [];
-
-var nodeTool = new paper.Tool();
 
 var node = function(x, y, id){
 	this.position = new paper.Point(x,y);
@@ -121,15 +123,6 @@ var drawNode = function(node){
 }
 
 window.onload = function(){
-}
-
-
-nodeTool.onMouseDown = function(event) {
-	createNode(event.point.x, event.point.y);
-}
-
-nodeTool.onMosueDrag = function(event) {
-	console.log('You dragged the mouse!');
 }
 
 var createNode = function(x, y){
